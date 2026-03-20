@@ -1,6 +1,4 @@
-// =========================================================
-// auth.rs - Login, session, OTP, activation, password reset
-// =========================================================
+
 
 use actix_web::{web, HttpResponse};
 use sqlx::MySqlPool;
@@ -11,7 +9,7 @@ use chrono::{Local, Duration};
 
 use crate::models::*;
 
-// ---- Step 1 of login: just check if customer ID exists ----
+
 pub async fn check_customer_id(
     db:   web::Data<MySqlPool>,
     body: web::Json<CheckCustomerReq>,
@@ -27,7 +25,7 @@ pub async fn check_customer_id(
 
     match found {
         Ok(Some(user)) => {
-            // Don't send back the password hash obviously
+            
             let first_name = user.full_name.split_whitespace().next().unwrap_or("").to_string();
             let acc = get_masked_acc(db.get_ref(), cid).await;
 
@@ -48,7 +46,7 @@ pub async fn check_customer_id(
     }
 }
 
-// ---- Step 2 of login: verify the password ----
+
 pub async fn do_login(
     db:   web::Data<MySqlPool>,
     body: web::Json<LoginReq>,
@@ -56,7 +54,6 @@ pub async fn do_login(
     let cid = &body.customer_id;
     let pwd = &body.password;
 
-    // First check if account is locked
     let lock_check = sqlx::query_as::<_, (i8,)>(
         "SELECT locked_out FROM login_attempts WHERE customer_id = ?"
     )
@@ -70,7 +67,7 @@ pub async fn do_login(
         ));
     }
 
-    // Get the user
+    
     let user_result = sqlx::query_as::<_, UserRow>(
         "SELECT * FROM users WHERE customer_id = ? AND net_active = 1"
     )
@@ -85,11 +82,11 @@ pub async fn do_login(
                 None => return HttpResponse::Ok().json(ApiResp::fail("NetBanking not activated")),
             };
 
-            // Check password with bcrypt
+            
             let pwd_ok = verify(pwd, &stored_hash).unwrap_or(false);
 
             if pwd_ok {
-                // Reset any bad attempt counter
+                
                 let _ = sqlx::query(
                     "DELETE FROM login_attempts WHERE customer_id = ?"
                 )
@@ -97,7 +94,7 @@ pub async fn do_login(
                 .execute(db.get_ref())
                 .await;
 
-                // Create a session token
+                
                 let token = Uuid::new_v4().to_string();
                 let expires = Local::now() + Duration::minutes(30);
 
@@ -141,7 +138,7 @@ pub async fn do_login(
     }
 }
 
-// ---- Check if this customer exists and hasn't activated NetBanking yet ----
+
 pub async fn check_for_activation(
     db:   web::Data<MySqlPool>,
     body: web::Json<CheckCustomerReq>,
@@ -178,7 +175,7 @@ pub async fn check_for_activation(
     }
 }
 
-// ---- Verify the debit card during activation ----
+
 pub async fn verify_card(
     db:   web::Data<MySqlPool>,
     body: web::Json<VerifyCardReq>,
@@ -194,7 +191,7 @@ pub async fn verify_card(
 
     match card {
         Ok(Some(c)) => {
-            // Check card number and expiry match
+            
             let num_ok    = c.card_number == body.card_number.replace(" ", "");
             let expiry_ok = c.card_expiry == body.card_expiry;
             let cvv_ok    = verify(&body.cvv, &c.cvv_hash).unwrap_or(false);
@@ -219,7 +216,7 @@ pub async fn verify_card(
     }
 }
 
-// ---- Generate a 6-digit OTP ----
+-
 pub async fn make_otp(
     db:   web::Data<MySqlPool>,
     body: web::Json<OtpReq>,
@@ -227,14 +224,14 @@ pub async fn make_otp(
     let cid     = &body.customer_id;
     let purpose = &body.purpose;
 
-    // Generate random 6-digit number
+    
     let otp_code: u32 = rand::thread_rng().gen_range(100000..999999);
     let otp_str  = otp_code.to_string();
 
-    // Valid for 5 minutes
+    
     let good_till = Local::now() + Duration::minutes(5);
 
-    // Clear any old OTPs for this person + purpose
+    
     let _ = sqlx::query(
         "DELETE FROM otp_codes WHERE customer_id = ? AND for_what = ?"
     )
@@ -243,7 +240,7 @@ pub async fn make_otp(
     .execute(db.get_ref())
     .await;
 
-    // Store the new OTP
+    
     let saved = sqlx::query(
         "INSERT INTO otp_codes (customer_id, the_otp, for_what, good_till) VALUES (?, ?, ?, ?)"
     )
@@ -256,8 +253,7 @@ pub async fn make_otp(
 
     match saved {
         Ok(_) => {
-            // In a real bank this would be SMS'd
-            // For the demo we return it so it can be shown on screen
+           
             HttpResponse::Ok().json(ApiResp::success(serde_json::json!({
                 "otp_for_demo": otp_str,
                 "valid_mins":   5,
@@ -270,7 +266,7 @@ pub async fn make_otp(
     }
 }
 
-// ---- Check if OTP entered is correct ----
+
 pub async fn verify_otp(
     db:   web::Data<MySqlPool>,
     body: web::Json<OtpVerifyReq>,
@@ -316,7 +312,7 @@ pub async fn verify_otp(
     }
 }
 
-// ---- Set password after OTP verified (activation flow) ----
+
 pub async fn set_password(
     db:   web::Data<MySqlPool>,
     body: web::Json<SetPwdReq>,
@@ -345,12 +341,12 @@ pub async fn set_password(
     }
 }
 
-// ---- Reset password (forgot password flow) ----
+
 pub async fn reset_password(
     db:   web::Data<MySqlPool>,
     body: web::Json<ResetPwdReq>,
 ) -> HttpResponse {
-    // First verify mobile matches the customer
+  
     let user = sqlx::query_as::<_, UserRow>(
         "SELECT * FROM users WHERE customer_id = ? AND mobile = ?"
     )
@@ -370,7 +366,7 @@ pub async fn reset_password(
         }
     };
 
-    // Hash and save new password
+    
     let hashed = match hash(&body.new_password, DEFAULT_COST) {
         Ok(h) => h,
         Err(_) => return HttpResponse::InternalServerError().json(ApiResp::fail("Hashing failed")),
@@ -384,7 +380,7 @@ pub async fn reset_password(
     .execute(db.get_ref())
     .await;
 
-    // Also unlock the account if it was locked
+    
     let _ = sqlx::query(
         "UPDATE login_attempts SET locked_out = 0, bad_attempts = 0 WHERE customer_id = ?"
     )
@@ -397,7 +393,7 @@ pub async fn reset_password(
     })))
 }
 
-// ---- Check if session token is still valid ----
+
 pub async fn check_session(
     db:    web::Data<MySqlPool>,
     query: web::Query<std::collections::HashMap<String, String>>,
@@ -434,7 +430,7 @@ pub async fn check_session(
     }
 }
 
-// ---- Logout - kill the session ----
+
 pub async fn logout(
     db:   web::Data<MySqlPool>,
     body: web::Json<serde_json::Value>,
@@ -453,9 +449,7 @@ pub async fn logout(
     })))
 }
 
-// =========================================================
-// Private helper functions
-// =========================================================
+
 
 async fn get_masked_acc(db: &MySqlPool, cid: &str) -> String {
     let row = sqlx::query_as::<_, (String,)>(
@@ -498,7 +492,7 @@ async fn track_bad_attempt(db: &MySqlPool, cid: &str) {
             .execute(db)
             .await;
         } else {
-            // Check if we need to lock now (3 or more attempts)
+            
             let _ = sqlx::query(
                 "UPDATE login_attempts SET locked_out = 1
                  WHERE customer_id = ? AND bad_attempts >= 3"
