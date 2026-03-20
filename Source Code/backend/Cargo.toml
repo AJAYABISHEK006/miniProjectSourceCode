@@ -1,0 +1,45 @@
+[package]
+name    = "nexusbank-backend"
+version = "0.1.0"
+edition = "2021"
+
+# =========================================================
+# All the libraries we need for the banking backend
+# =========================================================
+
+[dependencies]
+
+# Web framework - handles all HTTP routing
+actix-web = "4"
+
+# Database - connects to MySQL, runs queries safely
+sqlx = { version = "0.7", features = ["runtime-tokio-native-tls", "mysql", "chrono"] }
+
+# Password hashing - never store plain text passwords
+bcrypt = "0.15"
+
+# JSON serialization - convert structs to/from JSON
+serde      = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# UUID generation - create unique IDs for transactions, loans etc
+uuid = { version = "1", features = ["v4"] }
+
+# Date and time handling
+chrono = { version = "0.4", features = ["serde"] }
+
+# Random number generation - for OTP codes
+rand = "0.8"
+
+# Async runtime - needed by actix-web
+tokio = { version = "1", features = ["full"] }
+
+# Environment variables - read .env file for DB password etc
+dotenv = "0.15"
+
+# Logging
+log     = "0.4"
+env_logger = "0.10"
+
+[profile.release]
+opt-level = 3

@@ -1,0 +1,394 @@
+/* =========================================================
+   main.css - Global CSS Variables, Reset, Typography
+   NexusBank Design System
+   Inspired by Apple.com: clean, minimal, professional
+   ========================================================= */
+
+/* ---- Google Fonts loaded in HTML head ---- */
+/* DM Sans - clean, modern sans for body text */
+/* DM Mono - for account numbers, codes etc   */
+
+:root {
+    /* ---- Color Palette ---- */
+    --white:      #FFFFFF;
+    --off-white:  #F5F5F7;
+    --gray-light: #E8E8ED;
+    --gray-mid:   #888;
+    --gray-dark:  #444;
+    --black:      #1D1D1F;
+    --deep-black: #111111;
+
+    /* Accent - only used sparingly */
+    --green:      #22C55E;
+    --red:        #EF4444;
+    --amber:      #F59E0B;
+    --blue:       #3B82F6;
+
+    /* ---- Typography ---- */
+    --font-body:  'DM Sans', system-ui, -apple-system, sans-serif;
+    --font-mono:  'DM Mono', 'Courier New', monospace;
+
+    /* ---- Spacing ---- */
+    --space-xs:   4px;
+    --space-sm:   8px;
+    --space-md:   16px;
+    --space-lg:   24px;
+    --space-xl:   40px;
+    --space-2xl:  64px;
+
+    /* ---- Borders ---- */
+    --radius-sm:  6px;
+    --radius-md:  12px;
+    --radius-lg:  20px;
+    --radius-xl:  32px;
+
+    /* ---- Shadows ---- */
+    --shadow-xs:  0 1px 2px rgba(0,0,0,0.04);
+    --shadow-sm:  0 1px 4px rgba(0,0,0,0.06);
+    --shadow-md:  0 4px 16px rgba(0,0,0,0.08);
+    --shadow-lg:  0 8px 32px rgba(0,0,0,0.10);
+
+    /* ---- Transitions ---- */
+    --ease-out:   cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ---- CSS Reset ---- */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin:     0;
+    padding:    0;
+}
+
+html {
+    font-size:  16px;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family:        var(--font-body);
+    font-size:          16px;
+    line-height:        1.6;
+    color:              var(--black);
+    background:         var(--white);
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    color:           inherit;
+    text-decoration: none;
+}
+
+img, svg {
+    display: block;
+    max-width: 100%;
+}
+
+input, button, select, textarea {
+    font-family: inherit;
+    font-size:   inherit;
+}
+
+/* ---- Typography Scale ---- */
+h1 { font-size: 2.2rem;  font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; }
+h2 { font-size: 1.75rem; font-weight: 600; letter-spacing: -0.015em; }
+h3 { font-size: 1.25rem; font-weight: 500; }
+h4 { font-size: 1rem;    font-weight: 500; }
+
+p  { color: var(--gray-dark); }
+
+.mono { font-family: var(--font-mono); }
+
+/* ---- Logo ---- */
+.logo-nx { font-weight: 700; color: var(--deep-black); }
+.logo-bk { font-weight: 300; color: var(--gray-dark); }
+
+/* ---- Buttons ---- */
+.btn {
+    display:         inline-flex;
+    align-items:     center;
+    justify-content: center;
+    gap:             var(--space-sm);
+    padding:         10px 20px;
+    border-radius:   var(--radius-sm);
+    font-weight:     500;
+    font-size:       0.9rem;
+    cursor:          pointer;
+    transition:      all 0.18s var(--ease-out);
+    border:          2px solid transparent;
+    text-decoration: none;
+    white-space:     nowrap;
+}
+
+.btn-primary {
+    background: var(--deep-black);
+    color:      var(--white);
+    border-color: var(--deep-black);
+}
+.btn-primary:hover {
+    background: #333;
+    border-color: #333;
+}
+
+.btn-outline {
+    background:  transparent;
+    color:       var(--black);
+    border-color: var(--black);
+}
+.btn-outline:hover {
+    background: var(--off-white);
+}
+
+.btn-ghost {
+    background:   transparent;
+    color:        var(--gray-dark);
+    border-color: var(--gray-light);
+}
+.btn-ghost:hover { background: var(--off-white); }
+
+.btn-white {
+    background: var(--white);
+    color:      var(--black);
+}
+.btn-outline-white {
+    background:   transparent;
+    color:        var(--white);
+    border-color: rgba(255,255,255,0.5);
+}
+.btn-outline-white:hover { background: rgba(255,255,255,0.1); }
+
+.btn-full { width: 100%; }
+
+.btn-lg {
+    padding:    14px 28px;
+    font-size:  1rem;
+    border-radius: var(--radius-md);
+}
+
+/* ---- Form Elements ---- */
+.field-group {
+    margin-bottom: var(--space-md);
+}
+
+.field-label {
+    display:       block;
+    font-size:     0.85rem;
+    font-weight:   500;
+    color:         var(--gray-dark);
+    margin-bottom: var(--space-xs);
+}
+
+.required { color: var(--red); }
+
+.field-input {
+    width:         100%;
+    padding:       10px 14px;
+    border:        1.5px solid var(--gray-light);
+    border-radius: var(--radius-sm);
+    font-size:     0.95rem;
+    color:         var(--black);
+    background:    var(--white);
+    transition:    border-color 0.15s, box-shadow 0.15s;
+    outline:       none;
+    appearance:    none;
+}
+
+.field-input:focus {
+    border-color: var(--black);
+    box-shadow:   0 0 0 3px rgba(29,29,31,0.08);
+}
+
+.field-hint {
+    font-size:   0.78rem;
+    color:       var(--gray-mid);
+    margin-top:  var(--space-xs);
+}
+
+.field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-md);
+}
+
+textarea.field-input {
+    resize:     vertical;
+    min-height: 100px;
+}
+
+select.field-input {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23444' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat:   no-repeat;
+    background-position: right 14px center;
+    padding-right:       36px;
+}
+
+/* ---- Alerts ---- */
+.alert {
+    display:       flex;
+    align-items:   flex-start;
+    gap:           var(--space-sm);
+    padding:       var(--space-md);
+    border-radius: var(--radius-sm);
+    margin-bottom: var(--space-md);
+    font-size:     0.9rem;
+}
+
+.alert-error {
+    background: #FEF2F2;
+    color:      #B91C1C;
+    border:     1px solid #FECACA;
+}
+
+.alert-success {
+    background: #F0FDF4;
+    color:      #15803D;
+    border:     1px solid #BBF7D0;
+}
+
+.alert-icon { font-size: 1.1rem; flex-shrink: 0; }
+
+/* ---- Badges ---- */
+.badge {
+    display:       inline-block;
+    padding:       2px 8px;
+    border-radius: 99px;
+    font-size:     0.78rem;
+    font-weight:   500;
+}
+
+.badge-credit {
+    background: #F0FDF4;
+    color:      #15803D;
+}
+
+.badge-debit {
+    background: #FEF2F2;
+    color:      #B91C1C;
+}
+
+/* ---- Misc utility ---- */
+.text-success { color: var(--green); }
+.text-error   { color: var(--red);   }
+.text-muted   { color: var(--gray-mid); }
+
+.back-link {
+    font-size:   0.85rem;
+    color:       var(--gray-dark);
+    display:     flex;
+    align-items: center;
+    gap:         4px;
+    margin-bottom: var(--space-sm);
+}
+.back-link:hover { color: var(--black); }
+
+/* ---- Password show/hide toggle (pure CSS) ---- */
+.pwd-wrapper {
+    position: relative;
+}
+
+.pwd-toggle-check {
+    display: none;
+}
+
+.pwd-toggle-btn {
+    position: absolute;
+    right:    12px;
+    top:      50%;
+    transform: translateY(-50%);
+    cursor:   pointer;
+    color:    var(--gray-mid);
+    user-select: none;
+}
+
+/* When checkbox is checked, swap password to text */
+.pwd-toggle-check:checked + .pwd-field {
+    -webkit-text-security: none;
+}
+
+/* Simpler approach: use type and sibling */
+.pwd-toggle-check:checked ~ .pwd-field {
+    type: text; /* doesn't work in CSS but handled via adjacent styling */
+}
+
+.eye-closed { display: none; }
+.pwd-toggle-check:checked ~ .pwd-toggle-btn .eye-open  { display: none; }
+.pwd-toggle-check:checked ~ .pwd-toggle-btn .eye-closed { display: inline; }
+
+/* ---- Demo OTP display box ---- */
+.demo-otp-box {
+    background:    #FFFBEB;
+    border:        1px solid #FDE68A;
+    border-radius: var(--radius-sm);
+    padding:       var(--space-md);
+    margin-bottom: var(--space-md);
+    display:       flex;
+    align-items:   center;
+    gap:           var(--space-md);
+}
+
+.demo-label { font-size: 0.85rem; color: #92400E; }
+
+.demo-otp-val {
+    font-family: var(--font-mono);
+    font-size:   1.5rem;
+    font-weight: 600;
+    color:       #78350F;
+    letter-spacing: 0.1em;
+}
+
+/* ---- Password rules box ---- */
+.pwd-rules {
+    background:    var(--off-white);
+    border-radius: var(--radius-sm);
+    padding:       var(--space-md);
+    margin-bottom: var(--space-md);
+}
+
+.rules-title {
+    font-size:     0.85rem;
+    font-weight:   500;
+    margin-bottom: var(--space-xs);
+    color:         var(--black);
+}
+
+.pwd-rules ul {
+    list-style: none;
+    font-size:  0.82rem;
+    color:      var(--gray-dark);
+}
+
+.pwd-rules li::before {
+    content: "• ";
+    color: var(--gray-mid);
+}
+
+/* ---- Checkbox label ---- */
+.checkbox-label {
+    display:     flex;
+    align-items: flex-start;
+    gap:         var(--space-sm);
+    font-size:   0.88rem;
+    color:       var(--gray-dark);
+    cursor:      pointer;
+    margin-bottom: var(--space-sm);
+}
+
+.declaration-box {
+    background:    var(--off-white);
+    border-radius: var(--radius-sm);
+    padding:       var(--space-md);
+    margin-bottom: var(--space-lg);
+}
+
+/* ---- Empty state ---- */
+.empty-state {
+    text-align: center;
+    padding:    var(--space-xl);
+    color:      var(--gray-mid);
+}
+
+.empty-row {
+    text-align: center;
+    padding:    var(--space-xl) !important;
+    color:      var(--gray-mid);
+}
